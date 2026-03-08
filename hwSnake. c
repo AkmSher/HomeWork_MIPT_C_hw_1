@@ -62,10 +62,10 @@ void initFood(struct food f[], size_t size)
 	struct food init = {0,0,0,0,0};
 	int max_y = 0, max_x = 0;
 	getmaxyx(stdscr, max_y, max_x);
-	for(size_t i = 0; i < size; i++);
+	for(size_t i = 0; i < size; i++)
 	{
 		f[i] = init;
-	{
+    }
 } 
 
 void putFoodSeed(struct food *fp) 
@@ -158,18 +158,23 @@ void go(struct snake_t *head)
     switch (head->direction)
     {
         case LEFT:
-            if(head->x <= 0) // Циклическое движение, чтобы не
-// уходить за пределы экрана
+            if(head->x <= 0)
                 head->x = max_x;
             mvprintw(head->y, --(head->x), "%c", ch);
         break;
         case RIGHT:
+            if(head->x >= max_x)
+                head->x = 0;
             mvprintw(head->y, ++(head->x), "%c", ch);
         break;
         case UP:
+            if(head->y <= MIN_Y)
+                head->y = max_y;
             mvprintw(--(head->y), head->x, "%c", ch);
         break;
         case DOWN:
+            if(head->y >= max_y)
+                head->y = MIN_Y;
             mvprintw(++(head->y), head->x, "%c", ch);
         break;
         default:
@@ -207,6 +212,11 @@ void goTail(struct snake_t *head)
     head->tail[0].y = head->y;
 }
 
+void addTail(struct snake_t *head)
+{
+    if(head->tsize<=MAX_TAIL_SIZE)head->tsize++;
+}
+
 int main()
 {
 snake_t* snake = (snake_t*)malloc(sizeof(snake_t));
@@ -227,8 +237,14 @@ snake_t* snake = (snake_t*)malloc(sizeof(snake_t));
         key_pressed = getch(); // Считываем клавишу
         go(snake);
         goTail(snake);
+
         timeout(100); // Задержка при отрисовке
+        if(haveEat(snake, food)){
+            addTail(snake);
+        }
         changeDirection(snake, key_pressed);
+        refreshFood(food, SEED_NUMBER);// Обновляем еду
+
     }
     free(snake->tail);
     free(snake);
