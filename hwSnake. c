@@ -50,75 +50,75 @@ typedef struct tail_t
 
 struct food
 {
-	int x;
-	int y;
-	time_t put_time;
-	char point;
-	uint8_t enable;
+        int x;
+        int y;
+        time_t put_time;
+        char point;
+        uint8_t enable;
 } food[MAX_FOOD_SIZE];
 
 void initFood(struct food f[], size_t size) 
 {
-	struct food init = {0,0,0,0,0};
-	int max_y = 0, max_x = 0;
-	getmaxyx(stdscr, max_y, max_x);
-	for(size_t i = 0; i < size; i++)
-	{
-		f[i] = init;
+        struct food init = {0,0,0,0,0};
+        int max_y = 0, max_x = 0;
+        getmaxyx(stdscr, max_y, max_x);
+        for(size_t i = 0; i < size; i++)
+        {
+                f[i] = init;
     }
 } 
 
 void putFoodSeed(struct food *fp) 
 {
-	int max_x = 0, max_y = 0;
-	char spoint[2] = {0};
-	getmaxyx(stdscr, max_y, max_x);
-	mvprintw(fp->y, fp->x, " " );
-	fp->x = rand() % (max_x - 1);
-	fp->y = rand() % (max_y - 2) + 1;
-	fp->put_time = time(NULL);
-	fp->point = '$';
-	fp->enable = 1;
-	spoint[0] = fp->point;
-	mvprintw(fp->y, fp->x, "%s", spoint);
+        int max_x = 0, max_y = 0;
+        char spoint[2] = {0};
+        getmaxyx(stdscr, max_y, max_x);
+        mvprintw(fp->y, fp->x, " " );
+        fp->x = rand() % (max_x - 1);
+        fp->y = rand() % (max_y - 2) + 1;
+        fp->put_time = time(NULL);
+        fp->point = '$';
+        fp->enable = 1;
+        spoint[0] = fp->point;
+        mvprintw(fp->y, fp->x, "%s", spoint);
 } 
- 
+
 void putFood(struct food f[], size_t number_seeds) 
 {
-	for(size_t i = 0; i<number_seeds; i++) 
-	{
-		putFoodSeed(&f[i] );
-	} 
+        for(size_t i = 0; i<number_seeds; i++) 
+        {
+                putFoodSeed(&f[i] );
+        } 
 } 
 
 void refreshFood(struct food f[], int nfood) 
 {
-	int max_x = 0, max_y = 0;
-	//char spoint[2] = {0};
-	getmaxyx(stdscr, max_y, max_x);
-	for(size_t i=0; i<nfood; i++) 
-	{
-		if(f[i].put_time)
-		{
-			if(!f[i].enable || (time(NULL) - f[i].put_time) > FOOD_EXPIRE_SECONDS ) 
-			{
-				putFoodSeed(&f[i] );
-			} 
-		} 
-	} 
+        int max_x = 0, max_y = 0;
+        //char spoint[2] = {0};
+        getmaxyx(stdscr, max_y, max_x);
+        for(size_t i=0; i<nfood; i++) 
+        {
+                if(f[i].put_time)
+                {
+                        if(!f[i].enable || (time(NULL) - f[i].put_time) > FOOD_EXPIRE_SECONDS ) 
+                        {
+                                putFoodSeed(&f[i] );
+                        } 
+                } 
+        } 
 } 
 
 _Bool haveEat(struct snake_t *head, struct food f[] ) 
 {
-	for(size_t i=0; i<MAX_FOOD_SIZE; i++) 
-	{
-		if(f[i].enable && head->x == f[i].x && head->y == f[i].y) 
-		{
-			f[i].enable = 0;
-			return 1;
-		} 
-	} 
-	return 0;
+        for(size_t i=0; i<MAX_FOOD_SIZE; i++) 
+        {
+                if(f[i].enable && head->x == f[i].x && head->y == f[i].y) 
+                {
+                        f[i].enable = 0;
+                        return 1;
+                } 
+        } 
+        return 0;
 } 
 
 void initTail(struct tail_t t[], size_t size)
@@ -216,6 +216,17 @@ void addTail(struct snake_t *head)
 {
     if(head->tsize<=MAX_TAIL_SIZE)head->tsize++;
 }
+ 
+int checkCollisionWithSelf(struct snake_t *head)
+{
+    for(size_t i = 1; i < head->tsize; i++)
+    {
+        if(head->x == head->tail[i].x && head->y == head->tail[i].y)
+        {
+            return 1;
+        }
+    }
+    return 0;
 
 int main()
 {
