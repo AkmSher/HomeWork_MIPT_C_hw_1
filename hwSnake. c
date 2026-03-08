@@ -62,7 +62,7 @@ void initFood(struct food f[], size_t size)
 	struct food init = {0,0,0,0,0};
 	int max_y = 0, max_x = 0;
 	getmaxyx(stdscr, max_y, max_x);
-	for(size_t i = 0; i < size; i++;) 
+	for(size_t i = 0; i < size; i++);
 	{
 		f[i] = init;
 	{
@@ -94,7 +94,7 @@ void putFood(struct food f[], size_t number_seeds)
 void refreshFood(struct food f[], int nfood) 
 {
 	int max_x = 0, max_y = 0;
-	char spoint[2] = {0};
+	//char spoint[2] = {0};
 	getmaxyx(stdscr, max_y, max_x);
 	for(size_t i=0; i<nfood; i++) 
 	{
@@ -110,11 +110,11 @@ void refreshFood(struct food f[], int nfood)
 
 _Bool haveEat(struct snake_t *head, struct food f[] ) 
 {
-	for() 
+	for(size_t i=0; i<MAX_FOOD_SIZE; i++) 
 	{
 		if(f[i].enable && head->x == f[i].x && head->y == f[i].y) 
 		{
-			f[].enable = 0;
+			f[i].enable = 0;
 			return 1;
 		} 
 	} 
