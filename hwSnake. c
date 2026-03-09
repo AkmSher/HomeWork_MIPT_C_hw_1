@@ -49,6 +49,7 @@ typedef struct snake_t
     size_t tsize;
     struct tail_t *tail;
     struct control_buttons controls;
+    int is_main_snake;
 } snake_t;
 
 /*
@@ -148,14 +149,16 @@ void initHead(struct snake_t *head, int x, int y)
     head->direction = RIGHT;
 }
 
-void initSnake(snake_t *head, size_t size, int x, int y)
+void initSnake(snake_t *head, size_t size, int x, int y, int is_main)
 {
 tail_t*  tail  = (tail_t*) malloc(MAX_TAIL_SIZE*sizeof(tail_t));
     initTail(tail, MAX_TAIL_SIZE);
     initHead(head, x, y);
     head->tail = tail; // прикрепляем к голове хвост
     head->tsize = size+1;
-    head->controls = default_controls;
+    if(is_main) {head->controls = default_controls;} 
+    else{head->controls = wasd_controls;} 
+    head->is_main_snake = is_main;
 }
 
 /*
@@ -205,8 +208,8 @@ void go(struct snake_t *head)
 
 void changeDirection(struct snake_t* snake, const int32_t key)
 {
-         
-    if (key == snake->controls.down && snake->direction != UP)
+if(is_main_snake) 
+  {  if (key == snake->controls.down && snake->direction != UP)
     snake->direction = DOWN;
 else if (key == snake->controls.up && snake->direction != DOWN)
     snake->direction = UP;
@@ -214,6 +217,16 @@ else if (key == snake->controls.right && snake->direction != LEFT)
     snake->direction = RIGHT;
 else if (key == snake->controls.left && snake->direction != RIGHT)
     snake->direction = LEFT;
+   } else{
+		if (key ==(snake->controls.down_S || snake->controls.down_s) && snake->direction != UP)
+    snake->direction = DOWN;
+else if (key == (snake->controls.up_W || snake->controls.up_w) && snake->direction != DOWN)
+    snake->direction = UP;
+else if (key == (snake->controls.right_D || snake->controls.right_d) && snake->direction != LEFT)
+    snake->direction = RIGHT;
+else if (key == (snake->controls.left_A || snake->controls.left_a) && snake->direction != RIGHT)
+    snake->direction = LEFT;
+	} 
 }
 
 /*
@@ -241,7 +254,7 @@ void addTail(struct snake_t *head)
 {
     if(head->tsize<=MAX_TAIL_SIZE)head->tsize++;
 }
- 
+
 int checkCollisionWithSelf(struct snake_t *head)
 {
     for(size_t i = 1; i < head->tsize; i++)
@@ -256,8 +269,10 @@ int checkCollisionWithSelf(struct snake_t *head)
 int main()
 {
     snake_t* snake = (snake_t*)malloc(sizeof(snake_t));
-   
-    initSnake(snake,START_TAIL_SIZE,10,10);
+    snake_t* snake2 = (snake_t*)malloc(sizeof(snake_t));
+
+    initSnake(snake, START_TAIL_SIZE,10,10, 1 );
+    initSnake(snake2, START_TAIL_SIZE,15,15, 0 );
     initscr();
     keypad(stdscr, TRUE); // Включаем F1, F2, стрелки и т.д.
     raw();                // Откдючаем line buffering
@@ -271,20 +286,27 @@ int main()
     while( key_pressed != STOP_GAME )
     {
         key_pressed = getch(); // Считываем клавишу
-             
+
         go(snake);
         goTail(snake);
-        if(checkCollisionWithSelf(snake))break;
+        go(snake2);
+        goTail(snake2);
+       // if(checkCollisionWithSelf(snake))break;
         timeout(100); // Задержка при отрисовке
         if(haveEat(snake, food)){
             addTail(snake);
+        }
+        if(haveEat(snake2, food)){
+            addTail(snake2);
         }
         changeDirection(snake, key_pressed);
         refreshFood(food, SEED_NUMBER);// Обновляем еду
 
     }
     free(snake->tail);
-    free(snake);
+    free(snake); 
+    free(snake2->tail);
+    free(snake2);
     endwin(); // Завершаем режим curses mod
     return 0;
 }
