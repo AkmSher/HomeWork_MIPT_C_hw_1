@@ -12,28 +12,7 @@ enum {MAX_TAIL_SIZE=100, START_TAIL_SIZE=3, MAX_FOOD_SIZE=20, SEED_NUMBER=3, FOO
 
 
 // Здесь храним коды управления змейкой
-struct control_buttons
-{
-    int down;
-    int up;
-    int left;
-    int right;
-}control_buttons;
 
-struct control_buttons default_controls = {KEY_DOWN, KEY_UP, KEY_LEFT, KEY_RIGHT};
-
-struct control_buttons2
-{
-    int down_S;
-    int down_s;
-    int up_W;
-    int up_w;
-    int left_A;
-    int left_a;
-    int right_D;
-    int right_d;   
-}color1_buttons2;
-struct color1_buttons2 wasd_controls = {'S', 's', 'W', 'w', 'A', 'a', 'D', 'd'};
 /*
  Голова змейки содержит в себе
  x,y - координаты текущей позиции
@@ -48,7 +27,7 @@ typedef struct snake_t
     int direction;
     size_t tsize;
     struct tail_t *tail;
-    struct control_buttons controls;
+    
     int is_main_snake;
 } snake_t;
 
@@ -156,8 +135,7 @@ tail_t*  tail  = (tail_t*) malloc(MAX_TAIL_SIZE*sizeof(tail_t));
     initHead(head, x, y);
     head->tail = tail; // прикрепляем к голове хвост
     head->tsize = size+1;
-    if(is_main) {head->controls = default_controls;} 
-    else{head->controls = wasd_controls;} 
+    
     head->is_main_snake = is_main;
 }
 
@@ -206,27 +184,27 @@ void go(struct snake_t *head)
 
 
 
-void changeDirection(struct snake_t* snake, const int32_t key)
+void changeDirection(struct snake_t* snake, const int32_t key, int is_main)
 {
-if(is_main_snake) 
-  {  if (key == snake->controls.down && snake->direction != UP)
+if(is_main) 
+  {  if (key == KEY_DOWN && snake->direction != UP)
     snake->direction = DOWN;
-else if (key == snake->controls.up && snake->direction != DOWN)
+else if (key == KEY_UP && snake->direction != DOWN)
     snake->direction = UP;
-else if (key == snake->controls.right && snake->direction != LEFT)
+else if (key == KEY_RIGHT && snake->direction != LEFT)
     snake->direction = RIGHT;
-else if (key == snake->controls.left && snake->direction != RIGHT)
+else if (key == KEY_LEFT && snake->direction != RIGHT)
     snake->direction = LEFT;
    } else{
-		if (key ==(snake->controls.down_S || snake->controls.down_s) && snake->direction != UP)
-    snake->direction = DOWN;
-else if (key == (snake->controls.up_W || snake->controls.up_w) && snake->direction != DOWN)
-    snake->direction = UP;
-else if (key == (snake->controls.right_D || snake->controls.right_d) && snake->direction != LEFT)
-    snake->direction = RIGHT;
-else if (key == (snake->controls.left_A || snake->controls.left_a) && snake->direction != RIGHT)
-    snake->direction = LEFT;
-	} 
+		if(key == ('s' || 'S') && snake->direction != UP) 
+		snake->direction = DOWN;
+		else if(key == ('w' || 'W' ) && snake->direction!=DOWN) 
+		snake->direction = UP;
+		else if(key == ('d' || 'D' ) && snake->direction! =LEFT) 
+		snake->direction = RIGHT;
+		else if(key == ('a' || 'A' ) && snake->direction!=RIGHT) 
+		snake->direction = LIFT;
+		} 
 }
 
 /*
